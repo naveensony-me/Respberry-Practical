@@ -1,0 +1,54 @@
+from signal import signal, SIGTERM, SIGHUP, pause
+from rpi_lcd import LCD
+import time as t
+import RPi.GPIO as g
+
+g.setmode(g.BCM)
+g.setwarnings(False)
+
+lcd = LCD()
+IR_sensor = 20
+g.setup(IR_sensor, g.IN)
+
+obstacle_count = 0  # Variable to count obstacles detected
+
+# Define LED pins for 3-bit binary counter
+LED_pins = [21, 12, 24]  # Example LED pin numbers, adjust as needed
+for pin in LED_pins:
+    g.setup(pin, g.OUT)
+
+def safe_exit(signum, frame):
+    exit(1)
+
+try:
+    signal(SIGTERM, safe_exit)
+    signal(SIGHUP, safe_exit)
+    
+    while True:
+        if g.input(IR_sensor):
+            obstacle_count += 1  # Increment obstacle count
+            print("Detected")
+            lcd.text("Detected", 1)
+            lcd.text("count " + str(obstacle_count),2)
+        else:
+            print("Not Detected")
+            lcd.text("Not Detected", 1)
+            lcd.text("",2)
+        
+        # Convert obstacle count to 3-bit binary and display on LEDs
+        
+    
+        
+        binary_count = bin(obstacle_count % 8)[2:].zfill(3)  # Convert to binary (3 bits)
+        for i in range(3):
+            g.output(LED_pins[i], int(binary_count[i]))  # Display binary count on LEDs
+        
+        
+        t.sleep(0.5)
+        
+except KeyboardInterrupt:
+    pass
+
+finally:
+    lcd.clear()
+

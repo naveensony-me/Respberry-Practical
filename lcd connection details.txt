@@ -1,0 +1,5 @@
+ESP32	           ESP8266	   I2C LCD
+VCC= Vin	    Vin	             Vin
+GPIO21(I2C SDA)	   GPIO4 (D2)	     SDA
+GPIO22 (I2C SCL)   GPIO5 (D1)	     SCL
+GROUND	            GROUND	     GND
